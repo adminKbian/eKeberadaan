@@ -10,6 +10,12 @@
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
         .tab-active { border-bottom: 4px solid #1e40af; color: #1e40af; font-weight: bold; }
         
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
         @media print {
             body { background-color: white !important; padding: 0; }
             .no-print { display: none !important; }
@@ -112,7 +118,7 @@
             </form>
         </div>
 
-        <div id="view-admin" class="hidden animate-fadeIn">
+        <div id="view-admin" class="hidden">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
                     <p class="text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
@@ -158,7 +164,7 @@
                 <table class="w-full text-left border-collapse" id="dataTable">
                     <thead class="bg-gray-50 border-b">
                         <tr class="text-xs font-bold text-gray-500 uppercase">
-                            <th class="p-4 border-b">Tarikh</th>
+                            <th class="p-4 border-b">Tempoh Tarikh</th>
                             <th class="p-4 border-b">Nama Guru</th>
                             <th class="p-4 border-b">Kategori</th>
                             <th class="p-4 border-b">Urusan & Masa</th>
@@ -182,7 +188,6 @@
     </div>
 
     <script>
-        // MASUKKAN URL GOOGLE WEB APP ANDA DI SINI
         const WEB_APP_URL = "https://script.google.com/a/macros/moe-dl.edu.my/s/AKfycbyJvsdZpf0ditK9DvdId3DoF34FGetNpWzgLM9YMoEiHBHyG255CEvIFUCo-xaFMbU-/exec";
         let allData = []; 
 
@@ -191,11 +196,9 @@
             document.getElementById('tarikhMula').value = today;
             document.getElementById('tarikhTamat').value = today;
             document.getElementById('printDate').innerText = new Date().toLocaleString('ms-MY');
-            
             fetchNames();
         };
 
-        // Fungsi pengganti untuk google.script.run
         async function fetchNames() {
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=getNamaGuru`);
@@ -205,7 +208,6 @@
                 names.forEach(n => html += `<option value="${n}">${n}</option>`);
                 document.getElementById('nama').innerHTML = html;
             } catch (e) {
-                console.error("Gagal memuatkan nama", e);
                 document.getElementById('nama').innerHTML = '<option value="">Ralat memuatkan data</option>';
             }
         }
@@ -261,7 +263,7 @@
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Penting untuk GAS
+                    mode: 'no-cors',
                     body: JSON.stringify(data),
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -296,6 +298,7 @@
             const nameVal = document.getElementById('searchTable').value.toLowerCase();
             const dateStart = document.getElementById('filterDateStart').value;
             const dateEnd = document.getElementById('filterDateEnd').value;
+            const today = new Date().toISOString().split('T')[0];
             
             let html = "";
             let countTotal = 0;
@@ -304,13 +307,13 @@
             let countCuti = 0;
 
             const filtered = allData.slice().reverse().filter(r => {
-                const rowDate = r[1]; 
+                const rowDateMula = r[1]; 
                 const rowName = (r[3] || '').toLowerCase();
                 const matchName = rowName.includes(nameVal);
                 
                 let matchDate = true;
-                if (dateStart && rowDate < dateStart) matchDate = false;
-                if (dateEnd && rowDate > dateEnd) matchDate = false;
+                if (dateStart && rowDateMula < dateStart) matchDate = false;
+                if (dateEnd && rowDateMula > dateEnd) matchDate = false;
 
                 return matchName && matchDate;
             });
@@ -318,13 +321,24 @@
             filtered.forEach(r => {
                 countTotal++;
                 const kat = r[4] || '';
+                const tMula = r[1];
+                const tTamat = r[2];
+                const isActive = (today <= tTamat); // Check if today is before or on end date
+
                 if(kat.includes('KELUAR')) countKeluar++;
                 else if(kat.includes('RASMI')) countRasmi++;
                 else if(kat.includes('CUTI')) countCuti++;
 
-                html += `<tr class="hover:bg-gray-50 border-b">
-                    <td class="p-4 font-medium text-gray-600">${r[1]}</td>
-                    <td class="p-4 font-bold text-blue-900">${r[3] || '-'}</td>
+                html += `<tr class="hover:bg-gray-50 border-b ${isActive ? 'bg-blue-50/30' : ''}">
+                    <td class="p-4 font-medium text-gray-600">
+                        <div class="text-xs text-gray-400 uppercase font-bold">Tempoh:</div>
+                        <div class="text-sm">${tMula} hingga</div>
+                        <div class="text-sm font-bold text-gray-800">${tTamat}</div>
+                        ${isActive ? '<span class="inline-block mt-1 px-2 py-0.5 bg-blue-600 text-white text-[9px] rounded-full animate-pulse-soft no-print">MASIH BERLANGSUNG</span>' : ''}
+                    </td>
+                    <td class="p-4 font-bold text-blue-900">
+                        ${r[3] || '-'}
+                    </td>
                     <td class="p-4">
                         <span class="px-2 py-1 ${getBadgeClass(kat)} rounded-md text-[10px] font-bold uppercase no-print">
                             ${kat}
@@ -333,7 +347,7 @@
                     </td>
                     <td class="p-4">
                         <div class="font-bold text-gray-800">${r[5] || '-'}</div>
-                        <div class="text-xs text-gray-500">${r[7] || '--:--'} hingga ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
+                        <div class="text-xs text-gray-500">${r[7] || '--:--'} - ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
                         ${r[9] ? `<div class="text-[10px] italic text-gray-400 mt-1">Nota: ${r[9]}</div>` : ''}
                     </td>
                 </tr>`;
