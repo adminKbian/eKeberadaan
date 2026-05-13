@@ -42,7 +42,11 @@
 
     <nav class="bg-blue-900 text-white p-4 shadow-md no-print">
         <div class="container mx-auto flex justify-between items-center">
-            <span class="font-bold text-lg">SMK KEPONG BARU</span>
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo SMK Kepong Baru" class="h-10 w-auto">
+                <span class="font-bold text-lg uppercase tracking-tight">E-Keberadaan SMK KEPONG BARU</span>
+            </div>
+            
             <div class="flex space-x-2">
                 <button onclick="switchTab('user')" id="btn-user" class="px-4 py-2 tab-active">BORANG GURU</button>
                 <button onclick="promptAdmin()" id="btn-admin" class="px-4 py-2 opacity-80">ADMIN</button>
@@ -307,13 +311,11 @@
             let countCuti = 0;
 
             const filtered = allData.slice().reverse().filter(r => {
-                const rowDateMula = r[1]; // Tarikh Mula Rekod
-                const rowDateTamat = r[2]; // Tarikh Tamat Rekod
+                const rowDateMula = r[1]; 
+                const rowDateTamat = r[2]; 
                 const rowName = (r[3] || '').toLowerCase();
                 const matchName = rowName.includes(nameVal);
                 
-                // LOGIK OVERLAP:
-                // Rekod patut muncul jika (Tarikh Mula Rekod <= Filter Hingga) DAN (Tarikh Tamat Rekod >= Filter Dari)
                 let matchDate = true;
                 if (filterStart && rowDateTamat < filterStart) matchDate = false;
                 if (filterEnd && rowDateMula > filterEnd) matchDate = false;
