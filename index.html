@@ -28,6 +28,7 @@
             th { background-color: #f3f4f6 !important; color: black !important; border: 1px solid #000 !important; padding: 8px !important; }
             td { border: 1px solid #000 !important; padding: 8px !important; }
             tr { page-break-inside: avoid; }
+            .btn-delete-col { display: none !important; }
         }
         .print-only { display: none; }
     </style>
@@ -90,7 +91,7 @@
                 <div id="urusanContainer">
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Urusan</label>
                     <div id="urusanInput">
-                        <input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Urusan Peribadi">
+                        <input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50" placeholder="Contoh: Urusan Peribadi">
                     </div>
                 </div>
 
@@ -142,6 +143,14 @@
                 </div>
             </div>
 
+            <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print border-l-4 border-blue-900">
+                <label class="text-xs font-bold text-blue-900 uppercase ml-1 block mb-2">Urus Setia: Tambah Nama Guru Baru</label>
+                <div class="flex gap-2">
+                    <input type="text" id="newTeacherName" placeholder="Masukkan nama penuh guru..." class="p-3 border rounded-xl flex-grow outline-none focus:ring-2 focus:ring-blue-400">
+                    <button onclick="addNewTeacher()" id="btnAddTeacher" class="bg-blue-900 text-white px-6 py-3 rounded-xl hover:bg-blue-800 font-bold transition">SIMPAN NAMA</button>
+                </div>
+            </div>
+
             <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -172,10 +181,11 @@
                             <th class="p-4 border-b">Nama Guru</th>
                             <th class="p-4 border-b">Kategori</th>
                             <th class="p-4 border-b">Urusan & Masa</th>
+                            <th class="p-4 border-b text-center no-print btn-delete-col">Tindakan</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="text-sm divide-y">
-                        <tr><td colspan="4" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
+                        <tr><td colspan="5" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -282,19 +292,21 @@
         };
 
         async function loadAdminData() {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-500 italic">Memproses data dari pangkalan data...</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500 italic">Memproses data dari pangkalan data...</td></tr>';
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=getDataFromSheet`);
                 const data = await response.json();
                 if (!data || data.length <= 1) {
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-500">Tiada rekod ditemui.</td></tr>';
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod ditemui.</td></tr>';
                     resetStats();
                     return;
                 }
-                allData = data.slice(1); 
+                // Data dari sheet biasanya ada Header. Simpan r[0] adalah header.
+                // Kita akan simpan index asal supaya senang nak padam nanti
+                allData = data.map((row, index) => ({ content: row, originalIndex: index + 1 })).slice(1);
                 filterTable(); 
             } catch (e) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-500">Ralat sambungan API.</td></tr>';
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500">Ralat sambungan API.</td></tr>';
             }
         }
 
@@ -310,7 +322,8 @@
             let countRasmi = 0;
             let countCuti = 0;
 
-            const filtered = allData.slice().reverse().filter(r => {
+            const filtered = allData.slice().reverse().filter(item => {
+                const r = item.content;
                 const rowDateMula = r[1]; 
                 const rowDateTamat = r[2]; 
                 const rowName = (r[3] || '').toLowerCase();
@@ -323,7 +336,8 @@
                 return matchName && matchDate;
             });
 
-            filtered.forEach(r => {
+            filtered.forEach(item => {
+                const r = item.content;
                 countTotal++;
                 const kat = r[4] || '';
                 const tMula = r[1];
@@ -355,11 +369,18 @@
                         <div class="text-xs text-gray-500">${r[7] || '--:--'} - ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
                         ${r[9] ? `<div class="text-[10px] italic text-gray-400 mt-1">Nota: ${r[9]}</div>` : ''}
                     </td>
+                    <td class="p-4 text-center no-print btn-delete-col">
+                        <button onclick="deleteRecord(${item.originalIndex})" class="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition" title="Padam Rekod">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
                 </tr>`;
             });
 
             if (countTotal === 0) {
-                html = '<tr><td colspan="4" class="p-10 text-center text-gray-500">Tiada rekod sepadan.</td></tr>';
+                html = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod sepadan.</td></tr>';
             }
 
             document.getElementById('tableBody').innerHTML = html;
@@ -367,6 +388,49 @@
             document.getElementById('stat-keluar').innerText = countKeluar;
             document.getElementById('stat-rasmi').innerText = countRasmi;
             document.getElementById('stat-cuti').innerText = countCuti;
+        }
+
+        // FUNGSI BARU: PADAM REKOD
+        async function deleteRecord(rowIndex) {
+            if(!confirm("Adakah anda pasti mahu memadam rekod ini terus dari Google Sheets?")) return;
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=deleteRecord&row=${rowIndex}`);
+                const res = await response.json();
+                if(res.status === "Berjaya") {
+                    alert("Rekod telah dipadam!");
+                    loadAdminData();
+                } else {
+                    alert("Gagal memadam: " + res.mesej);
+                }
+            } catch (e) {
+                alert("Ralat sistem semasa memadam.");
+            }
+        }
+
+        // FUNGSI BARU: TAMBAH GURU
+        async function addNewTeacher() {
+            const name = document.getElementById('newTeacherName').value.trim();
+            if(!name) { alert("Sila masukkan nama guru!"); return; }
+            
+            const btn = document.getElementById('btnAddTeacher');
+            btn.disabled = true; btn.innerText = "Menyimpan...";
+
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=addGuru&nama=${encodeURIComponent(name)}`);
+                const res = await response.json();
+                if(res.status === "Berjaya") {
+                    alert("Nama guru telah ditambah ke dalam senarai!");
+                    document.getElementById('newTeacherName').value = "";
+                    fetchNames(); // Refresh dropdown borang
+                } else {
+                    alert("Ralat: " + res.mesej);
+                }
+            } catch (e) {
+                alert("Ralat sambungan sistem.");
+            } finally {
+                btn.disabled = false; btn.innerText = "SIMPAN NAMA";
+            }
         }
 
         function getBadgeClass(kat) {
