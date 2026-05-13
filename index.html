@@ -9,6 +9,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
         .tab-active { border-bottom: 4px solid #1e40af; color: #1e40af; font-weight: bold; }
+        .sub-tab-active { background-color: #1e40af; color: white; }
         
         @keyframes pulse-soft {
             0%, 100% { opacity: 1; }
@@ -127,70 +128,100 @@
         </div>
 
         <div id="view-admin" class="hidden">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
-                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
-                    <p id="stat-total" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+            
+            <div class="flex space-x-2 mb-6 no-print">
+                <button onclick="switchAdminSubTab('records')" id="btn-sub-records" class="flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm sub-tab-active border border-blue-900 transition">REKOD KEBERADAAN</button>
+                <button onclick="switchAdminSubTab('teachers')" id="btn-sub-teachers" class="flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm bg-white text-blue-900 border border-blue-900 transition">PENGURUSAN GURU</button>
+            </div>
+
+            <div id="admin-records-section">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
+                        <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
+                        <p id="stat-total" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+                    </div>
+                    <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-emerald-500 text-center">
+                        <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">KELUAR</p>
+                        <p id="stat-keluar" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+                    </div>
+                    <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-amber-500 text-center">
+                        <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">RASMI</p>
+                        <p id="stat-rasmi" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+                    </div>
+                    <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-red-500 text-center">
+                        <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">CUTI</p>
+                        <p id="stat-cuti" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+                    </div>
                 </div>
-                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-emerald-500 text-center">
-                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">KELUAR</p>
-                    <p id="stat-keluar" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Cari Nama</label>
+                            <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari nama..." class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Dari Tarikh</label>
+                            <input type="date" id="filterDateStart" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hingga Tarikh</label>
+                            <input type="date" id="filterDateEnd" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 justify-end">
+                        <button onclick="resetFilter()" class="flex-1 md:flex-none bg-gray-100 px-4 py-2 rounded-xl border hover:bg-gray-200 text-xs">Reset</button>
+                        <button onclick="window.print()" class="flex-1 md:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 hover:bg-blue-200 text-xs font-bold">Cetak</button>
+                        <button onclick="loadAdminData()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-xs font-semibold">Refresh</button>
+                    </div>
                 </div>
-                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-amber-500 text-center">
-                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">RASMI</p>
-                    <p id="stat-rasmi" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
-                </div>
-                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-red-500 text-center">
-                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">CUTI</p>
-                    <p id="stat-cuti" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
+
+                <div class="bg-white rounded-2xl shadow-xl border table-container">
+                    <table class="w-full text-left border-collapse min-w-[600px]" id="dataTable">
+                        <thead class="bg-gray-50 border-b">
+                            <tr class="text-[10px] md:text-xs font-bold text-gray-500 uppercase">
+                                <th class="p-4 border-b">Tempoh Tarikh</th>
+                                <th class="p-4 border-b">Nama Guru</th>
+                                <th class="p-4 border-b">Kategori</th>
+                                <th class="p-4 border-b">Urusan & Masa</th>
+                                <th class="p-4 border-b text-center no-print btn-delete-col">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="text-xs md:text-sm divide-y">
+                            <tr><td colspan="5" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print border-l-4 border-blue-900">
-                <label class="text-xs font-bold text-blue-900 uppercase ml-1 block mb-2">Urus Setia: Tambah Nama Guru Baru</label>
-                <div class="flex flex-col md:flex-row gap-2">
-                    <input type="text" id="newTeacherName" placeholder="Masukkan nama penuh guru..." class="p-3 border rounded-xl flex-grow outline-none focus:ring-2 focus:ring-blue-400 text-sm">
-                    <button onclick="addNewTeacher()" id="btnAddTeacher" class="bg-blue-900 text-white px-6 py-3 rounded-xl hover:bg-blue-800 font-bold transition text-sm">SIMPAN</button>
+            <div id="admin-teachers-section" class="hidden">
+                <div class="bg-white p-6 rounded-2xl shadow-md mb-6 border-l-4 border-blue-900">
+                    <h3 class="text-sm font-bold text-blue-900 uppercase mb-4">Tambah Guru Baru</h3>
+                    <div class="flex flex-col md:flex-row gap-2">
+                        <input type="text" id="newTeacherName" placeholder="Masukkan nama penuh guru..." class="p-3 border rounded-xl flex-grow outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        <button onclick="addNewTeacher()" id="btnAddTeacher" class="bg-blue-900 text-white px-6 py-3 rounded-xl hover:bg-blue-800 font-bold transition text-sm">SIMPAN NAMA</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Cari Nama</label>
-                        <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari nama..." class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                <div class="bg-white rounded-2xl shadow-xl border overflow-hidden">
+                    <div class="bg-gray-50 p-4 border-b">
+                        <h3 class="text-sm font-bold text-gray-600 uppercase">Senarai Guru Semasa</h3>
                     </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Dari Tarikh</label>
-                        <input type="date" id="filterDateStart" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hingga Tarikh</label>
-                        <input type="date" id="filterDateEnd" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                    <div class="max-h-[500px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-gray-100 sticky top-0">
+                                <tr class="text-[10px] font-bold text-gray-500 uppercase">
+                                    <th class="p-4">Bil</th>
+                                    <th class="p-4">Nama Guru</th>
+                                    <th class="p-4 text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherListBody" class="text-sm divide-y">
+                                <tr><td colspan="3" class="p-6 text-center text-gray-400 italic">Memuatkan senarai guru...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="flex flex-wrap gap-2 justify-end">
-                    <button onclick="resetFilter()" class="flex-1 md:flex-none bg-gray-100 px-4 py-2 rounded-xl border hover:bg-gray-200 text-xs">Reset</button>
-                    <button onclick="window.print()" class="flex-1 md:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 hover:bg-blue-200 text-xs font-bold">Cetak</button>
-                    <button onclick="loadAdminData()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-xs font-semibold">Refresh</button>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl border table-container">
-                <table class="w-full text-left border-collapse min-w-[600px]" id="dataTable">
-                    <thead class="bg-gray-50 border-b">
-                        <tr class="text-[10px] md:text-xs font-bold text-gray-500 uppercase">
-                            <th class="p-4 border-b">Tempoh Tarikh</th>
-                            <th class="p-4 border-b">Nama Guru</th>
-                            <th class="p-4 border-b">Kategori</th>
-                            <th class="p-4 border-b">Urusan & Masa</th>
-                            <th class="p-4 border-b text-center no-print btn-delete-col">Tindakan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="text-xs md:text-sm divide-y">
-                        <tr><td colspan="5" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
-                    </tbody>
-                </table>
             </div>
             
             <div class="print-only mt-10 flex justify-between text-xs">
@@ -207,6 +238,7 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/a/macros/moe-dl.edu.my/s/AKfycbyJvsdZpf0ditK9DvdId3DoF34FGetNpWzgLM9YMoEiHBHyG255CEvIFUCo-xaFMbU-/exec";
         let allData = []; 
+        let teacherNames = [];
 
         window.onload = () => {
             const today = new Date().toISOString().split('T')[0];
@@ -219,14 +251,42 @@
         async function fetchNames() {
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=getNamaGuru`);
-                const names = await response.json();
-                if(!names || names.length === 0) return;
+                teacherNames = await response.json();
+                if(!teacherNames || teacherNames.length === 0) return;
+                
+                // Update dropdown in form
                 let html = '<option value="">-- Pilih Nama --</option>';
-                names.forEach(n => html += `<option value="${n}">${n}</option>`);
+                teacherNames.forEach(n => html += `<option value="${n}">${n}</option>`);
                 document.getElementById('nama').innerHTML = html;
+
+                // Update teacher list in admin management
+                updateTeacherManagementList();
             } catch (e) {
                 document.getElementById('nama').innerHTML = '<option value="">Ralat memuatkan data</option>';
             }
+        }
+
+        function updateTeacherManagementList() {
+            const tbody = document.getElementById('teacherListBody');
+            if(!teacherNames || teacherNames.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-gray-400">Tiada data guru.</td></tr>';
+                return;
+            }
+
+            let html = "";
+            teacherNames.forEach((name, index) => {
+                html += `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4 text-gray-500 font-medium">${index + 1}</td>
+                    <td class="p-4 font-bold text-blue-900">${name}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="deleteTeacher('${name}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition text-xs font-bold border border-red-100">
+                            BUANG GURU
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
         }
 
         function switchTab(view) {
@@ -235,6 +295,14 @@
             document.getElementById('btn-user').className = view === 'user' ? 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base tab-active' : 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base opacity-80';
             document.getElementById('btn-admin').className = view === 'admin' ? 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base tab-active' : 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base opacity-80';
             if(view === 'admin') loadAdminData();
+        }
+
+        function switchAdminSubTab(sub) {
+            document.getElementById('admin-records-section').classList.toggle('hidden', sub !== 'records');
+            document.getElementById('admin-teachers-section').classList.toggle('hidden', sub !== 'teachers');
+            
+            document.getElementById('btn-sub-records').className = sub === 'records' ? 'flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm sub-tab-active border border-blue-900 transition' : 'flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm bg-white text-blue-900 border border-blue-900 transition';
+            document.getElementById('btn-sub-teachers').className = sub === 'teachers' ? 'flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm sub-tab-active border border-blue-900 transition' : 'flex-1 py-3 rounded-xl font-bold text-xs md:text-sm shadow-sm bg-white text-blue-900 border border-blue-900 transition';
         }
 
         function promptAdmin() {
@@ -392,8 +460,26 @@
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=addGuru&nama=${encodeURIComponent(name)}`);
                 const res = await response.json();
-                if(res.status === "Berjaya") { alert("Ditambah!"); document.getElementById('newTeacherName').value = ""; fetchNames(); }
-            } catch (e) { alert("Ralat!"); } finally { btn.disabled = false; }
+                if(res.status === "Berjaya") { 
+                    alert("Guru Berjaya Ditambah!"); 
+                    document.getElementById('newTeacherName').value = ""; 
+                    fetchNames(); 
+                }
+            } catch (e) { alert("Ralat semasa menambah guru!"); } finally { btn.disabled = false; }
+        }
+
+        async function deleteTeacher(name) {
+            if(!confirm(`Adakah anda pasti mahu membuang nama "${name}" daripada senarai guru?`)) return;
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=deleteGuru&nama=${encodeURIComponent(name)}`);
+                const res = await response.json();
+                if(res.status === "Berjaya") { 
+                    alert("Nama Guru Berjaya Dibuang!"); 
+                    fetchNames(); 
+                } else {
+                    alert("Gagal membuang nama guru.");
+                }
+            } catch (e) { alert("Ralat API."); }
         }
 
         function getBadgeClass(kat) {
