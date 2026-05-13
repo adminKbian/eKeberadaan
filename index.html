@@ -16,6 +16,9 @@
         }
         .animate-pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
+        /* Mobile Scroll Helper */
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
         @media print {
             body { background-color: white !important; padding: 0; }
             .no-print { display: none !important; }
@@ -41,49 +44,49 @@
         <hr class="border-t-2 border-black mt-2">
     </div>
 
-    <nav class="bg-blue-900 text-white p-4 shadow-md no-print">
-        <div class="container mx-auto flex justify-between items-center">
+    <nav class="bg-blue-900 text-white p-4 shadow-md no-print sticky top-0 z-50">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <img src="logo.png" alt="Logo SMK Kepong Baru" class="h-10 w-auto">
-                <span class="font-bold text-lg uppercase tracking-tight">E-Keberadaan SMK KEPONG BARU</span>
+                <img src="logo.png" alt="Logo" class="h-8 md:h-10 w-auto">
+                <span class="font-bold text-sm md:text-lg uppercase tracking-tight">E-Keberadaan SMK KEPONG BARU</span>
             </div>
             
-            <div class="flex space-x-2">
-                <button onclick="switchTab('user')" id="btn-user" class="px-4 py-2 tab-active">BORANG GURU</button>
-                <button onclick="promptAdmin()" id="btn-admin" class="px-4 py-2 opacity-80">ADMIN</button>
+            <div class="flex space-x-1 md:space-x-2 w-full md:w-auto justify-center">
+                <button onclick="switchTab('user')" id="btn-user" class="flex-1 md:flex-none px-3 py-2 text-sm md:text-base tab-active">BORANG GURU</button>
+                <button onclick="promptAdmin()" id="btn-admin" class="flex-1 md:flex-none px-3 py-2 text-sm md:text-base opacity-80">ADMIN</button>
             </div>
         </div>
     </nav>
 
-    <div class="container mx-auto p-4 max-w-4xl">
+    <div class="container mx-auto p-2 md:p-4 max-w-4xl">
         
-        <div id="view-user" class="bg-white rounded-2xl shadow-xl p-6 md:p-8 no-print">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center border-b pb-4">E-Keberadaan Guru</h2>
+        <div id="view-user" class="bg-white rounded-2xl shadow-xl p-5 md:p-8 no-print">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-6 text-center border-b pb-4">Borang Keberadaan Guru</h2>
             
             <form id="attendanceForm" class="space-y-5">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori Urusan</label>
-                    <select id="kategori" onchange="toggleFields()" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    <select id="kategori" onchange="toggleFields()" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition text-sm md:text-base">
                         <option value="KELUAR WAKTU BEKERJA">KELUAR WAKTU BEKERJA / DALAMAN</option>
                         <option value="URUSAN RASMI">URUSAN RASMI</option>
                         <option value="CUTI">CUTI</option>
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh Mula</label>
-                        <input type="date" id="tarikhMula" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" id="tarikhMula" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm md:text-base" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh Tamat</label>
-                        <input type="date" id="tarikhTamat" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" id="tarikhTamat" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm md:text-base" required>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Guru</label>
-                    <select id="nama" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                    <select id="nama" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm md:text-base" required>
                         <option value="">Memuatkan senarai nama...</option>
                     </select>
                 </div>
@@ -91,63 +94,63 @@
                 <div id="urusanContainer">
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Urusan</label>
                     <div id="urusanInput">
-                        <input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50" placeholder="Contoh: Urusan Peribadi">
+                        <input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 text-sm md:text-base" placeholder="Contoh: Urusan Peribadi">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Lokasi / Destinasi</label>
-                    <input type="text" id="lokasi" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                    <input type="text" id="lokasi" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm md:text-base" required>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Masa Keluar</label>
                         <div class="flex gap-2">
-                            <input type="time" id="masaKeluar" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500">
-                            <button type="button" onclick="setTime('masaKeluar')" class="bg-gray-200 px-3 rounded-xl hover:bg-gray-300">Sekarang</button>
+                            <input type="time" id="masaKeluar" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm">
+                            <button type="button" onclick="setTime('masaKeluar')" class="bg-gray-200 px-3 rounded-xl hover:bg-gray-300 text-xs md:text-sm font-medium">Kini</button>
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Masa Masuk</label>
-                        <input type="time" id="masaMasuk" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        <input type="time" id="masaMasuk" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Catatan</label>
-                    <textarea id="catatan" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
+                    <textarea id="catatan" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 text-sm md:text-base" rows="2"></textarea>
                 </div>
 
-                <button type="submit" id="submitBtn" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 shadow-lg transition transform active:scale-95">HANTAR REKOD</button>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 shadow-lg transition transform active:scale-95 text-base">HANTAR REKOD</button>
             </form>
         </div>
 
         <div id="view-admin" class="hidden">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
-                    <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
+                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
+                    <p id="stat-total" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-emerald-500 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">KELUAR/DALAMAN</p>
-                    <p id="stat-keluar" class="text-2xl font-bold text-gray-800">0</p>
+                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-emerald-500 text-center">
+                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">KELUAR</p>
+                    <p id="stat-keluar" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-amber-500 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">URUSAN RASMI</p>
-                    <p id="stat-rasmi" class="text-2xl font-bold text-gray-800">0</p>
+                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-amber-500 text-center">
+                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">RASMI</p>
+                    <p id="stat-rasmi" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-red-500 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">CUTI</p>
-                    <p id="stat-cuti" class="text-2xl font-bold text-gray-800">0</p>
+                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border-b-4 border-red-500 text-center">
+                    <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase">CUTI</p>
+                    <p id="stat-cuti" class="text-xl md:text-2xl font-bold text-gray-800">0</p>
                 </div>
             </div>
 
             <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print border-l-4 border-blue-900">
                 <label class="text-xs font-bold text-blue-900 uppercase ml-1 block mb-2">Urus Setia: Tambah Nama Guru Baru</label>
-                <div class="flex gap-2">
-                    <input type="text" id="newTeacherName" placeholder="Masukkan nama penuh guru..." class="p-3 border rounded-xl flex-grow outline-none focus:ring-2 focus:ring-blue-400">
-                    <button onclick="addNewTeacher()" id="btnAddTeacher" class="bg-blue-900 text-white px-6 py-3 rounded-xl hover:bg-blue-800 font-bold transition">SIMPAN NAMA</button>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="newTeacherName" placeholder="Masukkan nama penuh guru..." class="p-3 border rounded-xl flex-grow outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                    <button onclick="addNewTeacher()" id="btnAddTeacher" class="bg-blue-900 text-white px-6 py-3 rounded-xl hover:bg-blue-800 font-bold transition text-sm">SIMPAN</button>
                 </div>
             </div>
 
@@ -155,28 +158,28 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase ml-1">Cari Nama</label>
-                        <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari nama..." class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                        <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari nama..." class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase ml-1">Dari Tarikh</label>
-                        <input type="date" id="filterDateStart" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                        <input type="date" id="filterDateStart" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hingga Tarikh</label>
-                        <input type="date" id="filterDateEnd" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                        <input type="date" id="filterDateEnd" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400 text-sm">
                     </div>
                 </div>
-                <div class="flex gap-2 justify-end">
-                    <button onclick="resetFilter()" class="bg-gray-100 px-4 py-2 rounded-xl border hover:bg-gray-200 text-sm">Reset Tapis</button>
-                    <button onclick="window.print()" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 hover:bg-blue-200 text-sm font-bold">Cetak Report</button>
-                    <button onclick="loadAdminData()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-sm font-semibold">Refresh Data</button>
+                <div class="flex flex-wrap gap-2 justify-end">
+                    <button onclick="resetFilter()" class="flex-1 md:flex-none bg-gray-100 px-4 py-2 rounded-xl border hover:bg-gray-200 text-xs">Reset</button>
+                    <button onclick="window.print()" class="flex-1 md:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 hover:bg-blue-200 text-xs font-bold">Cetak</button>
+                    <button onclick="loadAdminData()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-xs font-semibold">Refresh</button>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border">
-                <table class="w-full text-left border-collapse" id="dataTable">
+            <div class="bg-white rounded-2xl shadow-xl border table-container">
+                <table class="w-full text-left border-collapse min-w-[600px]" id="dataTable">
                     <thead class="bg-gray-50 border-b">
-                        <tr class="text-xs font-bold text-gray-500 uppercase">
+                        <tr class="text-[10px] md:text-xs font-bold text-gray-500 uppercase">
                             <th class="p-4 border-b">Tempoh Tarikh</th>
                             <th class="p-4 border-b">Nama Guru</th>
                             <th class="p-4 border-b">Kategori</th>
@@ -184,7 +187,7 @@
                             <th class="p-4 border-b text-center no-print btn-delete-col">Tindakan</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="text-sm divide-y">
+                    <tbody id="tableBody" class="text-xs md:text-sm divide-y">
                         <tr><td colspan="5" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
                     </tbody>
                 </table>
@@ -229,8 +232,8 @@
         function switchTab(view) {
             document.getElementById('view-user').classList.toggle('hidden', view !== 'user');
             document.getElementById('view-admin').classList.toggle('hidden', view !== 'admin');
-            document.getElementById('btn-user').className = view === 'user' ? 'px-4 py-2 tab-active' : 'px-4 py-2 opacity-80';
-            document.getElementById('btn-admin').className = view === 'admin' ? 'px-4 py-2 tab-active' : 'px-4 py-2 opacity-80';
+            document.getElementById('btn-user').className = view === 'user' ? 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base tab-active' : 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base opacity-80';
+            document.getElementById('btn-admin').className = view === 'admin' ? 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base tab-active' : 'flex-1 md:flex-none px-3 py-2 text-sm md:text-base opacity-80';
             if(view === 'admin') loadAdminData();
         }
 
@@ -249,11 +252,11 @@
             const kat = document.getElementById('kategori').value;
             const div = document.getElementById('urusanInput');
             if(kat === 'URUSAN RASMI') {
-                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50"><option>MESYUARAT</option><option>BENGKEL</option><option>TAKLIMAT</option><option>PROGRAM</option></select>`;
+                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 text-sm"><option>MESYUARAT</option><option>BENGKEL</option><option>TAKLIMAT</option><option>PROGRAM</option></select>`;
             } else if(kat === 'CUTI') {
-                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50"><option>CUTI SAKIT</option><option>CRK</option><option>CTR</option><option>CUTI KUARINTIN</option><option>CUTI BERSALIN</option></select>`;
+                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 text-sm"><option>CUTI SAKIT</option><option>CRK</option><option>CTR</option><option>CUTI KUARINTIN</option><option>CUTI BERSALIN</option></select>`;
             } else {
-                div.innerHTML = `<input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50" placeholder="Sebab keluar...">`;
+                div.innerHTML = `<input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 text-sm" placeholder="Sebab keluar...">`;
             }
         }
 
@@ -292,21 +295,19 @@
         };
 
         async function loadAdminData() {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500 italic">Memproses data dari pangkalan data...</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500 italic">Memproses data...</td></tr>';
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=getDataFromSheet`);
                 const data = await response.json();
                 if (!data || data.length <= 1) {
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod ditemui.</td></tr>';
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod.</td></tr>';
                     resetStats();
                     return;
                 }
-                // Data dari sheet biasanya ada Header. Simpan r[0] adalah header.
-                // Kita akan simpan index asal supaya senang nak padam nanti
                 allData = data.map((row, index) => ({ content: row, originalIndex: index + 1 })).slice(1);
                 filterTable(); 
             } catch (e) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500">Ralat sambungan API.</td></tr>';
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500">Ralat API.</td></tr>';
             }
         }
 
@@ -317,22 +318,14 @@
             const today = new Date().toISOString().split('T')[0];
             
             let html = "";
-            let countTotal = 0;
-            let countKeluar = 0;
-            let countRasmi = 0;
-            let countCuti = 0;
+            let countTotal = 0, countKeluar = 0, countRasmi = 0, countCuti = 0;
 
             const filtered = allData.slice().reverse().filter(item => {
                 const r = item.content;
-                const rowDateMula = r[1]; 
-                const rowDateTamat = r[2]; 
-                const rowName = (r[3] || '').toLowerCase();
-                const matchName = rowName.includes(nameVal);
-                
+                const matchName = (r[3] || '').toLowerCase().includes(nameVal);
                 let matchDate = true;
-                if (filterStart && rowDateTamat < filterStart) matchDate = false;
-                if (filterEnd && rowDateMula > filterEnd) matchDate = false;
-
+                if (filterStart && r[2] < filterStart) matchDate = false;
+                if (filterEnd && r[1] > filterEnd) matchDate = false;
                 return matchName && matchDate;
             });
 
@@ -340,38 +333,32 @@
                 const r = item.content;
                 countTotal++;
                 const kat = r[4] || '';
-                const tMula = r[1];
-                const tTamat = r[2];
-                const isActive = (today >= tMula && today <= tTamat);
+                const isActive = (today >= r[1] && today <= r[2]);
 
                 if(kat.includes('KELUAR')) countKeluar++;
                 else if(kat.includes('RASMI')) countRasmi++;
                 else if(kat.includes('CUTI')) countCuti++;
 
                 html += `<tr class="hover:bg-gray-50 border-b ${isActive ? 'bg-blue-50/30' : ''}">
-                    <td class="p-4 font-medium text-gray-600">
-                        <div class="text-xs text-gray-400 uppercase font-bold">Tempoh:</div>
-                        <div class="text-sm">${tMula} hingga</div>
-                        <div class="text-sm font-bold text-gray-800">${tTamat}</div>
-                        ${isActive ? '<span class="inline-block mt-1 px-2 py-0.5 bg-blue-600 text-white text-[9px] rounded-full animate-pulse-soft no-print">MASIH BERLANGSUNG</span>' : ''}
-                    </td>
-                    <td class="p-4 font-bold text-blue-900">
-                        ${r[3] || '-'}
-                    </td>
                     <td class="p-4">
-                        <span class="px-2 py-1 ${getBadgeClass(kat)} rounded-md text-[10px] font-bold uppercase no-print">
-                            ${kat}
-                        </span>
+                        <div class="text-[10px] text-gray-400 uppercase font-bold">Tempoh:</div>
+                        <div class="text-xs md:text-sm">${r[1]} hingga</div>
+                        <div class="text-xs md:text-sm font-bold text-gray-800">${r[2]}</div>
+                        ${isActive ? '<span class="inline-block mt-1 px-2 py-0.5 bg-blue-600 text-white text-[9px] rounded-full animate-pulse-soft no-print">BERLANGSUNG</span>' : ''}
+                    </td>
+                    <td class="p-4 font-bold text-blue-900 text-xs md:text-sm">${r[3] || '-'}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 ${getBadgeClass(kat)} rounded-md text-[9px] md:text-[10px] font-bold uppercase no-print">${kat}</span>
                         <span class="print-only text-black font-semibold text-xs">${kat}</span>
                     </td>
                     <td class="p-4">
-                        <div class="font-bold text-gray-800">${r[5] || '-'}</div>
-                        <div class="text-xs text-gray-500">${r[7] || '--:--'} - ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
+                        <div class="font-bold text-gray-800 text-xs md:text-sm">${r[5] || '-'}</div>
+                        <div class="text-[10px] md:text-xs text-gray-500">${r[7] || '--:--'} - ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
                         ${r[9] ? `<div class="text-[10px] italic text-gray-400 mt-1">Nota: ${r[9]}</div>` : ''}
                     </td>
                     <td class="p-4 text-center no-print btn-delete-col">
-                        <button onclick="deleteRecord(${item.originalIndex})" class="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition" title="Padam Rekod">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button onclick="deleteRecord(${item.originalIndex})" class="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
@@ -379,9 +366,7 @@
                 </tr>`;
             });
 
-            if (countTotal === 0) {
-                html = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod sepadan.</td></tr>';
-            }
+            if (countTotal === 0) html = '<tr><td colspan="5" class="p-10 text-center text-gray-500">Tiada rekod.</td></tr>';
 
             document.getElementById('tableBody').innerHTML = html;
             document.getElementById('stat-total').innerText = countTotal;
@@ -390,47 +375,25 @@
             document.getElementById('stat-cuti').innerText = countCuti;
         }
 
-        // FUNGSI BARU: PADAM REKOD
         async function deleteRecord(rowIndex) {
-            if(!confirm("Adakah anda pasti mahu memadam rekod ini terus dari Google Sheets?")) return;
-            
+            if(!confirm("Hapus rekod ini?")) return;
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=deleteRecord&row=${rowIndex}`);
                 const res = await response.json();
-                if(res.status === "Berjaya") {
-                    alert("Rekod telah dipadam!");
-                    loadAdminData();
-                } else {
-                    alert("Gagal memadam: " + res.mesej);
-                }
-            } catch (e) {
-                alert("Ralat sistem semasa memadam.");
-            }
+                if(res.status === "Berjaya") { alert("Dipadam!"); loadAdminData(); }
+            } catch (e) { alert("Ralat!"); }
         }
 
-        // FUNGSI BARU: TAMBAH GURU
         async function addNewTeacher() {
             const name = document.getElementById('newTeacherName').value.trim();
-            if(!name) { alert("Sila masukkan nama guru!"); return; }
-            
+            if(!name) return;
             const btn = document.getElementById('btnAddTeacher');
-            btn.disabled = true; btn.innerText = "Menyimpan...";
-
+            btn.disabled = true;
             try {
                 const response = await fetch(`${WEB_APP_URL}?action=addGuru&nama=${encodeURIComponent(name)}`);
                 const res = await response.json();
-                if(res.status === "Berjaya") {
-                    alert("Nama guru telah ditambah ke dalam senarai!");
-                    document.getElementById('newTeacherName').value = "";
-                    fetchNames(); // Refresh dropdown borang
-                } else {
-                    alert("Ralat: " + res.mesej);
-                }
-            } catch (e) {
-                alert("Ralat sambungan sistem.");
-            } finally {
-                btn.disabled = false; btn.innerText = "SIMPAN NAMA";
-            }
+                if(res.status === "Berjaya") { alert("Ditambah!"); document.getElementById('newTeacherName').value = ""; fetchNames(); }
+            } catch (e) { alert("Ralat!"); } finally { btn.disabled = false; }
         }
 
         function getBadgeClass(kat) {
