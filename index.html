@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Keberadaan Guru - SMK Kepong Baru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        .tab-active { border-bottom: 4px solid #1e40af; color: #1e40af; font-weight: bold; }
+        
+        @media print {
+            body { background-color: white !important; padding: 0; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            .bg-white { box-shadow: none !important; border: none !important; }
+            #view-admin .grid { display: flex !important; flex-direction: row !important; gap: 10px !important; margin-bottom: 20px !important; }
+            #view-admin .grid > div { border: 1px solid #ddd !important; flex: 1 !important; padding: 10px !important; }
+            table { width: 100% !important; border: 1px solid #000 !important; border-collapse: collapse !important; }
+            th { background-color: #f3f4f6 !important; color: black !important; border: 1px solid #000 !important; padding: 8px !important; }
+            td { border: 1px solid #000 !important; padding: 8px !important; }
+            tr { page-break-inside: avoid; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <div class="print-only text-center mb-6">
+        <h1 class="text-2xl font-bold uppercase">Laporan E-Keberadaan Guru</h1>
+        <h2 class="text-xl">SMK KEPONG BARU</h2>
+        <hr class="border-t-2 border-black mt-2">
+    </div>
+
+    <nav class="bg-blue-900 text-white p-4 shadow-md no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <span class="font-bold text-lg">SMK KEPONG BARU</span>
+            <div class="flex space-x-2">
+                <button onclick="switchTab('user')" id="btn-user" class="px-4 py-2 tab-active">BORANG GURU</button>
+                <button onclick="promptAdmin()" id="btn-admin" class="px-4 py-2 opacity-80">ADMIN</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 max-w-4xl">
+        
+        <div id="view-user" class="bg-white rounded-2xl shadow-xl p-6 md:p-8 no-print">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center border-b pb-4">E-Keberadaan Guru</h2>
+            
+            <form id="attendanceForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori Urusan</label>
+                    <select id="kategori" onchange="toggleFields()" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <option value="KELUAR WAKTU BEKERJA">KELUAR WAKTU BEKERJA / DALAMAN</option>
+                        <option value="URUSAN RASMI">URUSAN RASMI</option>
+                        <option value="CUTI">CUTI</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh Mula</label>
+                        <input type="date" id="tarikhMula" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh Tamat</label>
+                        <input type="date" id="tarikhTamat" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Guru</label>
+                    <select id="nama" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">Memuatkan senarai nama...</option>
+                    </select>
+                </div>
+
+                <div id="urusanContainer">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Urusan</label>
+                    <div id="urusanInput">
+                        <input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Urusan Peribadi">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Lokasi / Destinasi</label>
+                    <input type="text" id="lokasi" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Masa Keluar</label>
+                        <div class="flex gap-2">
+                            <input type="time" id="masaKeluar" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                            <button type="button" onclick="setTime('masaKeluar')" class="bg-gray-200 px-3 rounded-xl hover:bg-gray-300">Sekarang</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Masa Masuk</label>
+                        <input type="time" id="masaMasuk" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Catatan</label>
+                    <textarea id="catatan" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 shadow-lg transition transform active:scale-95">HANTAR REKOD</button>
+            </form>
+        </div>
+
+        <div id="view-admin" class="hidden animate-fadeIn">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-600 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">JUMLAH REKOD</p>
+                    <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-emerald-500 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">KELUAR/DALAMAN</p>
+                    <p id="stat-keluar" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-amber-500 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">URUSAN RASMI</p>
+                    <p id="stat-rasmi" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-red-500 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">CUTI</p>
+                    <p id="stat-cuti" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-md mb-6 no-print space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Cari Nama</label>
+                        <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari nama..." class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Dari Tarikh</label>
+                        <input type="date" id="filterDateStart" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hingga Tarikh</label>
+                        <input type="date" id="filterDateEnd" onchange="filterTable()" class="p-3 border rounded-xl w-full outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <button onclick="resetFilter()" class="bg-gray-100 px-4 py-2 rounded-xl border hover:bg-gray-200 text-sm">Reset Tapis</button>
+                    <button onclick="window.print()" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 hover:bg-blue-200 text-sm font-bold">Cetak Report</button>
+                    <button onclick="loadAdminData()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 text-sm font-semibold">Refresh Data</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border">
+                <table class="w-full text-left border-collapse" id="dataTable">
+                    <thead class="bg-gray-50 border-b">
+                        <tr class="text-xs font-bold text-gray-500 uppercase">
+                            <th class="p-4 border-b">Tarikh</th>
+                            <th class="p-4 border-b">Nama Guru</th>
+                            <th class="p-4 border-b">Kategori</th>
+                            <th class="p-4 border-b">Urusan & Masa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="text-sm divide-y">
+                        <tr><td colspan="4" class="p-10 text-center">Sila klik butang Refresh untuk memuatkan data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="print-only mt-10 flex justify-between text-xs">
+                <p>Dicetak pada: <span id="printDate"></span></p>
+                <div class="text-center">
+                    <p class="mb-10">Disediakan oleh:</p>
+                    <p>__________________________</p>
+                    <p>(Pentadbir SMK Kepong Baru)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MASUKKAN URL GOOGLE WEB APP ANDA DI SINI
+        const WEB_APP_URL = "https://script.google.com/a/macros/moe-dl.edu.my/s/AKfycbyJvsdZpf0ditK9DvdId3DoF34FGetNpWzgLM9YMoEiHBHyG255CEvIFUCo-xaFMbU-/exec";
+        let allData = []; 
+
+        window.onload = () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tarikhMula').value = today;
+            document.getElementById('tarikhTamat').value = today;
+            document.getElementById('printDate').innerText = new Date().toLocaleString('ms-MY');
+            
+            fetchNames();
+        };
+
+        // Fungsi pengganti untuk google.script.run
+        async function fetchNames() {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getNamaGuru`);
+                const names = await response.json();
+                if(!names || names.length === 0) return;
+                let html = '<option value="">-- Pilih Nama --</option>';
+                names.forEach(n => html += `<option value="${n}">${n}</option>`);
+                document.getElementById('nama').innerHTML = html;
+            } catch (e) {
+                console.error("Gagal memuatkan nama", e);
+                document.getElementById('nama').innerHTML = '<option value="">Ralat memuatkan data</option>';
+            }
+        }
+
+        function switchTab(view) {
+            document.getElementById('view-user').classList.toggle('hidden', view !== 'user');
+            document.getElementById('view-admin').classList.toggle('hidden', view !== 'admin');
+            document.getElementById('btn-user').className = view === 'user' ? 'px-4 py-2 tab-active' : 'px-4 py-2 opacity-80';
+            document.getElementById('btn-admin').className = view === 'admin' ? 'px-4 py-2 tab-active' : 'px-4 py-2 opacity-80';
+            if(view === 'admin') loadAdminData();
+        }
+
+        function promptAdmin() {
+            const pw = prompt("Password Admin:");
+            if(pw === "admin1") switchTab('admin');
+            else if(pw) alert("Salah!");
+        }
+
+        function setTime(id) {
+            const n = new Date();
+            document.getElementById(id).value = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
+        }
+
+        function toggleFields() {
+            const kat = document.getElementById('kategori').value;
+            const div = document.getElementById('urusanInput');
+            if(kat === 'URUSAN RASMI') {
+                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50"><option>MESYUARAT</option><option>BENGKEL</option><option>TAKLIMAT</option><option>PROGRAM</option></select>`;
+            } else if(kat === 'CUTI') {
+                div.innerHTML = `<select id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50"><option>CUTI SAKIT</option><option>CRK</option><option>CTR</option><option>CUTI KUARINTIN</option></select>`;
+            } else {
+                div.innerHTML = `<input type="text" id="jenisUrusan" class="w-full p-3 border rounded-xl bg-gray-50" placeholder="Sebab keluar...">`;
+            }
+        }
+
+        document.getElementById('attendanceForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerText = "Sila tunggu...";
+            
+            const data = {
+                tarikhMula: document.getElementById('tarikhMula').value,
+                tarikhTamat: document.getElementById('tarikhTamat').value,
+                nama: document.getElementById('nama').value,
+                kategori: document.getElementById('kategori').value,
+                jenisUrusan: document.getElementById('jenisUrusan').value,
+                lokasi: document.getElementById('lokasi').value,
+                masaKeluar: document.getElementById('masaKeluar').value,
+                masaMasuk: document.getElementById('masaMasuk').value,
+                catatan: document.getElementById('catatan').value
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Penting untuk GAS
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                alert("Data telah dihantar!");
+                document.getElementById('attendanceForm').reset();
+                toggleFields();
+            } catch (e) {
+                alert("Ralat penghantaran data");
+            } finally {
+                btn.disabled = false; btn.innerText = "HANTAR REKOD";
+            }
+        };
+
+        async function loadAdminData() {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-500 italic">Memproses data dari pangkalan data...</td></tr>';
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=getDataFromSheet`);
+                const data = await response.json();
+                if (!data || data.length <= 1) {
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-500">Tiada rekod ditemui.</td></tr>';
+                    resetStats();
+                    return;
+                }
+                allData = data.slice(1); 
+                filterTable(); 
+            } catch (e) {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-500">Ralat sambungan API.</td></tr>';
+            }
+        }
+
+        function filterTable() {
+            const nameVal = document.getElementById('searchTable').value.toLowerCase();
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
+            
+            let html = "";
+            let countTotal = 0;
+            let countKeluar = 0;
+            let countRasmi = 0;
+            let countCuti = 0;
+
+            const filtered = allData.slice().reverse().filter(r => {
+                const rowDate = r[1]; 
+                const rowName = (r[3] || '').toLowerCase();
+                const matchName = rowName.includes(nameVal);
+                
+                let matchDate = true;
+                if (dateStart && rowDate < dateStart) matchDate = false;
+                if (dateEnd && rowDate > dateEnd) matchDate = false;
+
+                return matchName && matchDate;
+            });
+
+            filtered.forEach(r => {
+                countTotal++;
+                const kat = r[4] || '';
+                if(kat.includes('KELUAR')) countKeluar++;
+                else if(kat.includes('RASMI')) countRasmi++;
+                else if(kat.includes('CUTI')) countCuti++;
+
+                html += `<tr class="hover:bg-gray-50 border-b">
+                    <td class="p-4 font-medium text-gray-600">${r[1]}</td>
+                    <td class="p-4 font-bold text-blue-900">${r[3] || '-'}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 ${getBadgeClass(kat)} rounded-md text-[10px] font-bold uppercase no-print">
+                            ${kat}
+                        </span>
+                        <span class="print-only text-black font-semibold text-xs">${kat}</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-gray-800">${r[5] || '-'}</div>
+                        <div class="text-xs text-gray-500">${r[7] || '--:--'} hingga ${r[8] || '--:--'} @ ${r[6] || '-'}</div>
+                        ${r[9] ? `<div class="text-[10px] italic text-gray-400 mt-1">Nota: ${r[9]}</div>` : ''}
+                    </td>
+                </tr>`;
+            });
+
+            if (countTotal === 0) {
+                html = '<tr><td colspan="4" class="p-10 text-center text-gray-500">Tiada rekod sepadan.</td></tr>';
+            }
+
+            document.getElementById('tableBody').innerHTML = html;
+            document.getElementById('stat-total').innerText = countTotal;
+            document.getElementById('stat-keluar').innerText = countKeluar;
+            document.getElementById('stat-rasmi').innerText = countRasmi;
+            document.getElementById('stat-cuti').innerText = countCuti;
+        }
+
+        function getBadgeClass(kat) {
+            if(kat.includes('KELUAR')) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+            if(kat.includes('RASMI')) return 'bg-amber-50 text-amber-700 border border-amber-200';
+            if(kat.includes('CUTI')) return 'bg-red-50 text-red-700 border border-red-200';
+            return 'bg-gray-50 text-gray-700';
+        }
+
+        function resetStats() {
+            document.getElementById('stat-total').innerText = "0";
+            document.getElementById('stat-keluar').innerText = "0";
+            document.getElementById('stat-rasmi').innerText = "0";
+            document.getElementById('stat-cuti').innerText = "0";
+        }
+
+        function resetFilter() {
+            document.getElementById('searchTable').value = "";
+            document.getElementById('filterDateStart').value = "";
+            document.getElementById('filterDateEnd').value = "";
+            filterTable();
+        }
+    </script>
+</body>
+</html>
