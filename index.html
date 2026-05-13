@@ -296,8 +296,8 @@
 
         function filterTable() {
             const nameVal = document.getElementById('searchTable').value.toLowerCase();
-            const dateStart = document.getElementById('filterDateStart').value;
-            const dateEnd = document.getElementById('filterDateEnd').value;
+            const filterStart = document.getElementById('filterDateStart').value;
+            const filterEnd = document.getElementById('filterDateEnd').value;
             const today = new Date().toISOString().split('T')[0];
             
             let html = "";
@@ -307,13 +307,16 @@
             let countCuti = 0;
 
             const filtered = allData.slice().reverse().filter(r => {
-                const rowDateMula = r[1]; 
+                const rowDateMula = r[1]; // Tarikh Mula Rekod
+                const rowDateTamat = r[2]; // Tarikh Tamat Rekod
                 const rowName = (r[3] || '').toLowerCase();
                 const matchName = rowName.includes(nameVal);
                 
+                // LOGIK OVERLAP:
+                // Rekod patut muncul jika (Tarikh Mula Rekod <= Filter Hingga) DAN (Tarikh Tamat Rekod >= Filter Dari)
                 let matchDate = true;
-                if (dateStart && rowDateMula < dateStart) matchDate = false;
-                if (dateEnd && rowDateMula > dateEnd) matchDate = false;
+                if (filterStart && rowDateTamat < filterStart) matchDate = false;
+                if (filterEnd && rowDateMula > filterEnd) matchDate = false;
 
                 return matchName && matchDate;
             });
@@ -323,7 +326,7 @@
                 const kat = r[4] || '';
                 const tMula = r[1];
                 const tTamat = r[2];
-                const isActive = (today <= tTamat); // Check if today is before or on end date
+                const isActive = (today >= tMula && today <= tTamat);
 
                 if(kat.includes('KELUAR')) countKeluar++;
                 else if(kat.includes('RASMI')) countRasmi++;
